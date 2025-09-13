@@ -11,35 +11,35 @@ import 'package:arch_mc2_tech_test/features/weather/presentation/screen/weather_
 
 import 'l10n/app_localizations.dart';
 
+// main_api.dart
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await resetAndRegister(useCsv: false, assetReader: rootBundle.loadString);
-  runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: WeatherBloc(slInstance<LoadWeather>())),
-        BlocProvider(create: (_) => slInstance<LocaleCubit>()),
-      ],
-      child: const App(),
-    ),
-  );
+  runApp(const App());
 }
 
 class App extends StatelessWidget {
   const App({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LocaleCubit, Locale>(
-      builder: (_, locale) => MaterialApp(
-        locale: locale,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [Locale('en'), Locale('fr')],
-        home: const WeatherPage(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => slInstance<WeatherBloc>()),
+        BlocProvider(create: (_) => slInstance<LocaleCubit>()),
+      ],
+      child: BlocBuilder<LocaleCubit, Locale>(
+        builder: (_, locale) => MaterialApp(
+          locale: locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en'), Locale('fr')],
+          home: const WeatherPage(),
+        ),
       ),
     );
   }
