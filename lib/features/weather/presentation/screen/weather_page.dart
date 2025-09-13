@@ -1,3 +1,5 @@
+import 'package:arch_mc2_tech_test/core/di/service_locator.dart';
+import 'package:arch_mc2_tech_test/features/local/locale_cubit.dart';
 import 'package:arch_mc2_tech_test/features/weather/presentation/bloc/weather_bloc.dart';
 import 'package:arch_mc2_tech_test/features/weather/presentation/bloc/weather_event.dart';
 import 'package:arch_mc2_tech_test/features/weather/presentation/bloc/weather_state.dart';
@@ -44,7 +46,21 @@ class _WeatherPageState extends State<WeatherPage> {
               slivers: [
                 SliverAppBar(
                   pinned: true,
-                  title: Text(l10n.appTitle)
+                  title: Text(l10n.appTitle),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.language),
+                      onPressed: () {
+                        final localeCubit = slInstance<LocaleCubit>();
+
+                        if (localeCubit.state.languageCode == 'en') {
+                          localeCubit.changeLocale(const Locale('fr'));
+                        } else {
+                          localeCubit.changeLocale(const Locale('en'));
+                        }
+                      },
+                    ),
+                  ],
                 ),
                 SliverToBoxAdapter(child: CurrentPanel(current: w.current)),
                 SliverToBoxAdapter(child: MetricRow(current: w.current)),

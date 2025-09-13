@@ -1,3 +1,4 @@
+import 'package:arch_mc2_tech_test/features/local/locale_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -10,47 +11,36 @@ import 'package:arch_mc2_tech_test/features/weather/presentation/screen/weather_
 
 import 'l10n/app_localizations.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  resetAndRegister(useCsv: true, assetReader: rootBundle.loadString);
-
-  // ✅ récupère le usecase déjà enregistré, puis crée le bloc
-  final weatherBloc = WeatherBloc(slInstance<LoadWeather>());
-
-  // ✅ fournit le bloc par valeur : aucun appel à sl<WeatherBloc>() dans le build
+  await resetAndRegister(useCsv: false, assetReader: rootBundle.loadString);
   runApp(
-    BlocProvider.value(
-      value: weatherBloc,
+    MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: WeatherBloc(slInstance<LoadWeather>())),
+        BlocProvider(create: (_) => slInstance<LocaleCubit>()),
+      ],
       child: const App(),
     ),
   );
-
-  // runApp(const App());
 }
 
-class App extends StatefulWidget {
+class App extends StatelessWidget {
   const App({super.key});
-
   @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  Locale _locale = const Locale('fr'); // par défaut en anglais
-
-  void setLocale(Locale locale) {
-    setState(() => _locale = locale);
+  Widget build(BuildContext context) {
+    return BlocBuilder<LocaleCubit, Locale>(
+      builder: (_, locale) => MaterialApp(
+        locale: locale,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en'), Locale('fr')],
+        home: const WeatherPage(),
+      ),
+    );
   }
-  @override
-  Widget build(BuildContext context) => MaterialApp(
-    localizationsDelegates: const [
-      AppLocalizations.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    locale: _locale,
-    supportedLocales: const [Locale('en'), Locale('fr')],
-    home: const WeatherPage(),
-  );
 }

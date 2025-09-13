@@ -1,3 +1,4 @@
+import 'package:arch_mc2_tech_test/features/local/locale_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 
@@ -10,39 +11,30 @@ import 'package:arch_mc2_tech_test/features/weather/presentation/bloc/weather_bl
 
 final GetIt slInstance = GetIt.instance;
 
-void resetAndRegister({
+Future<void> resetAndRegister({
   required bool useCsv,
   required Future<String> Function(String asset) assetReader,
   String baseUrl = 'http://127.0.0.1:8080',
-}) {
-  slInstance.reset();
+}) async {
+  await slInstance.reset();
+  slInstance.allowReassignment = true;
 
   slInstance.registerLazySingleton<Dio>(
-    () => Dio(BaseOptions(baseUrl: baseUrl)),
+      () => Dio(BaseOptions(baseUrl: baseUrl)),
   );
+
+  slInstance.registerSingleton<LocaleCubit>(LocaleCubit());
 
   if (useCsv) {
-    slInstance.registerLazySingleton<CsvWeatherDS>(
-      () => CsvWeatherDS(assetReader),
-    );
-    slInstance.registerLazySingleton<WeatherRepository>(
-      () => WeatherRepositoryImpl.csv(slInstance<CsvWeatherDS>()),
-    );
+    slInstance.registerLazySingleton<CsvWeatherDS>(() => CsvWeatherDS(assetReader));
+    slInstance.registerLazySingleton<WeatherRepository>(() => WeatherRepositoryImpl.csv(slInstance<CsvWeatherDS>()),);
   } else {
-    slInstance.registerLazySingleton<ApiWeatherDS>(
-      () => ApiWeatherDS(slInstance<Dio>()),
-    );
-    slInstance.registerLazySingleton<WeatherRepository>(
-      () => WeatherRepositoryImpl.api(slInstance<ApiWeatherDS>()),
-    );
+    slInstance.registerLazySingleton<ApiWeatherDS>(() => ApiWeatherDS(slInstance<Dio>()));
+    slInstance.registerLazySingleton<WeatherRepository>(() => WeatherRepositoryImpl.api(slInstance<ApiWeatherDS>()),);
   }
 
-  // Use case
-  slInstance.registerLazySingleton<LoadWeather>(
-    () => LoadWeather(slInstance<WeatherRepository>()),
-  );
+  slInstance.registerLazySingleton<LoadWeather>(() => LoadWeather(slInstance<WeatherRepository>()),);
 
-  slInstance.registerFactory<WeatherBloc>(
-    () => WeatherBloc(slInstance<LoadWeather>()),
-  );
+  slInstance.registerFactory<WeatherBloc>(() => WeatherBloc(slInstance<LoadWeather>()),);
+
 }
