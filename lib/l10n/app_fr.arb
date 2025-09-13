@@ -1,0 +1,15 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Météo",
+  "current": "Actuel",
+  "humidity": "Humidité",
+  "uvIndex": "Indice UV",
+  "aqi": "Qualité de l'air",
+  "wind": "Vent",
+  "hourly": "Prochaines heures",
+
+  "cloudy": "Nuageux",
+  "rain": "Pluie",
+  "storm": "Orage",
+  "sunny": "Ensoleillé"
+}

@@ -1,0 +1,15 @@
+{
+  "@@locale": "en",
+  "appTitle": "Weather",
+  "current": "Current",
+  "humidity": "Humidity",
+  "uvIndex": "UV Index",
+  "aqi": "Air Quality",
+  "wind": "Wind",
+  "hourly": "Next hours",
+
+  "cloudy": "Cloudy",
+  "rain": "Rain",
+  "storm": "Storm",
+  "sunny": "Sunny"
+}
